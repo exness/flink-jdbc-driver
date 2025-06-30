@@ -51,11 +51,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.apache.flink.table.jdbc.utils.DriverUtils.checkNotNull;
 import static org.apache.flink.table.jdbc.utils.DriverUtils.generateRowKindColumnName;
@@ -65,7 +61,7 @@ import static org.apache.flink.table.jdbc.utils.DriverUtils.getHeartBeatMessageI
 
 /** ResultSet for flink jdbc driver. */
 abstract class FlinkResultSet extends BaseResultSet {
-    protected final List<DataType> dataTypeList;
+    protected final List<DataType> enrichedDataTypeList;
     protected final List<String> columnNameList;
     protected final Statement statement;
     protected final boolean asChangeLog;
@@ -73,6 +69,7 @@ abstract class FlinkResultSet extends BaseResultSet {
     private final List<RowData.FieldGetter> fieldGetterList;
     private final FlinkResultSetMetaData resultSetMetaData;
     private final Map<Integer, JsonRowDataSerializationSchema> jsonSerializers = new HashMap<>();
+    protected final List<DataType> dataTypeList;
     protected RowData currentRow;
     protected boolean wasNull;
     protected volatile boolean closed;
@@ -87,11 +84,11 @@ abstract class FlinkResultSet extends BaseResultSet {
         this.addStreamStateColumn = addStreamStateColumn;
         this.currentRow = null;
         this.wasNull = false;
-
-        this.dataTypeList = createDataTypeList(schema.getColumnDataTypes());
+        this.dataTypeList = schema.getColumnDataTypes();
+        this.enrichedDataTypeList = createDataTypeList(schema.getColumnDataTypes());
         this.columnNameList = createColumnNameList(schema.getColumnNames());
-        this.fieldGetterList = createFieldGetterList(dataTypeList);
-        this.resultSetMetaData = new FlinkResultSetMetaData(columnNameList, dataTypeList);
+        this.fieldGetterList = createFieldGetterList(enrichedDataTypeList);
+        this.resultSetMetaData = new FlinkResultSetMetaData(columnNameList, enrichedDataTypeList);
     }
 
     protected RowData enrich(RowData row, boolean isHeartBeatRecord) throws SQLException {
@@ -467,8 +464,8 @@ abstract class FlinkResultSet extends BaseResultSet {
         checkValidRow();
         checkValidColumn(columnIndex);
         try {
+            DataType dataType = enrichedDataTypeList.get(columnIndex-1);
             Object object = fieldGetterList.get(columnIndex - 1).getFieldOrNull(currentRow);
-            DataType dataType = dataTypeList.get(columnIndex - 1);
             return convertToJavaObject(object, dataType.getLogicalType(), columnIndex);
         } catch (Exception e) {
             throw new SQLDataException(e);
@@ -501,7 +498,6 @@ abstract class FlinkResultSet extends BaseResultSet {
         if (object == null) {
             return null;
         }
-
         switch (dataType.getTypeRoot()) {
             case BOOLEAN:
             case TINYINT:
@@ -617,7 +613,7 @@ abstract class FlinkResultSet extends BaseResultSet {
         checkValidRow();
         checkValidColumn(columnIndex);
 
-        DataType dataType = dataTypeList.get(columnIndex - 1);
+        DataType dataType = enrichedDataTypeList.get(columnIndex - 1);
         if (!(dataType.getLogicalType() instanceof DecimalType)) {
             throw new SQLException(
                     String.format(
