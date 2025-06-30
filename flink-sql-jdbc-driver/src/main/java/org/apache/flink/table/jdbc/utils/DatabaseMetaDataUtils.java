@@ -443,6 +443,40 @@ public class DatabaseMetaDataUtils {
                 false);
     }
 
+    public static ResultSet createEmptyColumnsResultSet(Statement statement) {
+
+        return new FlinkBatchResultSet(
+                statement,
+                CloseableIterator.empty(),
+                ResolvedSchema.of(
+                        TABLE_CAT_COLUMN,
+                        TABLE_SCHEM_COLUMN,
+                        TABLE_NAME_COLUMN,
+                        COLUMN_NAME_COLUMN,
+                        DATA_TYPE_COLUMN,
+                        TYPE_NAME_COLUMN,
+                        COLUMN_SIZE_COLUMN,
+                        BUFFER_LENGTH_COLUMN,
+                        DECIMAL_DIGITS_COLUMN,
+                        NUM_PREC_RADIX_COLUMN,
+                        NULLABLE_COLUMN,
+                        REMARKS_COLUMN,
+                        COLUMN_DEF_COLUMN,
+                        SQL_DATA_TYPE_COLUMN,
+                        SQL_DATETIME_SUB_COLUMN,
+                        CHAR_OCTET_LENGTH_COLUMN,
+                        ORDINAL_POSITION_COLUMN,
+                        IS_NULLABLE_COLUMN,
+                        SCOPE_CATALOG_COLUMN,
+                        SCOPE_SCHEMA_COLUMN,
+                        SCOPE_TABLE_COLUMN,
+                        SOURCE_DATA_TYPE_COLUMN,
+                        IS_AUTOINCREMENT_COLUMN,
+                        IS_GENERATEDCOLUMN_COLUMN),
+                false);
+    }
+
+
     /**
      * Retrieves a description of the given table's primary key columns. They are ordered by
      * COLUMN_NAME.

@@ -57,14 +57,15 @@ public class FlinkConnection extends BaseConnection {
     public FlinkConnection(DriverUri driverUri) {
         this.url = driverUri.getURL();
         this.statements = new ArrayList<>();
-        this.executor =
-                Executor.create(
-                        new DefaultContext(
-                                DriverUtils.fromProperties(driverUri.getProperties()),
-                                Collections.emptyList()),
-                        driverUri.getAddress(),
-                        UUID.randomUUID().toString(),
-                        RowFormat.JSON);
+
+        this.executor = new JdbcExecutor(new DefaultContext(
+                DriverUtils.fromProperties(driverUri.getProperties()),
+                Collections.emptyList()),
+                driverUri.getAddress(),
+                UUID.randomUUID().toString(),
+                RowFormat.JSON
+                );
+
         driverUri.getCatalog().ifPresent(this::setSessionCatalog);
         driverUri.getDatabase().ifPresent(this::setSessionSchema);
     }

@@ -18,16 +18,15 @@
 
 package org.apache.flink.table.jdbc;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
-import org.junit.jupiter.api.io.TempDir;
-
 import java.nio.file.Path;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.apache.flink.table.jdbc.FlinkDriverOptions.RESULT_MODE;
 import static org.apache.flink.table.jdbc.FlinkDriverOptions.STREAMING_RESULT_HEARTBEAT_INTERVAL_MS;
@@ -39,9 +38,12 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Tests for flink statement. */
+/**
+ * Tests for flink statement.
+ */
 public class FlinkStatementStreamingTest extends FlinkJdbcDriverTestBase {
-    @TempDir private Path tempDir;
+    @TempDir
+    private Path tempDir;
 
     @Test
     @Timeout(value = 60)
@@ -54,24 +56,24 @@ public class FlinkStatementStreamingTest extends FlinkJdbcDriverTestBase {
             try (Statement statement = connection.createStatement()) {
                 // CREATE TABLE is not a query and has no results
                 assertFalse(
-                        statement.execute(
-                                String.format(
-                                        "CREATE TABLE test_table(id bigint, val int, str string, timestamp1 timestamp(0), timestamp2 timestamp_ltz(3), time_data time, date_data date) "
-                                                + "with ("
-                                                + "'connector'='filesystem',\n"
-                                                + "'format'='csv',\n"
-                                                + "'path'='%s')",
-                                        tempDir)));
+                    statement.execute(
+                        String.format(
+                            "CREATE TABLE test_table(id bigint, val int, str string, timestamp1 timestamp(0), timestamp2 timestamp_ltz(3), time_data time, date_data date) "
+                                + "with ("
+                                + "'connector'='filesystem',\n"
+                                + "'format'='csv',\n"
+                                + "'path'='%s')",
+                            tempDir)));
                 assertEquals(0, statement.getUpdateCount());
 
                 // INSERT TABLE returns job id
                 assertTrue(
-                        statement.execute(
-                                "INSERT INTO test_table VALUES "
-                                        + "(1, 11, '111', TIMESTAMP '2021-04-15 23:18:36', TO_TIMESTAMP_LTZ(400000000000, 3), TIME '12:32:00', DATE '2023-11-02'), "
-                                        + "(3, 33, '333', TIMESTAMP '2021-04-16 23:18:36', TO_TIMESTAMP_LTZ(500000000000, 3), TIME '13:32:00', DATE '2023-12-02'), "
-                                        + "(2, 22, '222', TIMESTAMP '2021-04-17 23:18:36', TO_TIMESTAMP_LTZ(600000000000, 3), TIME '14:32:00', DATE '2023-01-02'), "
-                                        + "(4, 44, '444', TIMESTAMP '2021-04-18 23:18:36', TO_TIMESTAMP_LTZ(700000000000, 3), TIME '15:32:00', DATE '2023-02-02')"));
+                    statement.execute(
+                        "INSERT INTO test_table VALUES "
+                            + "(1, 11, '111', TIMESTAMP '2021-04-15 23:18:36', TO_TIMESTAMP_LTZ(400000000000, 3), TIME '12:32:00', DATE '2023-11-02'), "
+                            + "(3, 33, '333', TIMESTAMP '2021-04-16 23:18:36', TO_TIMESTAMP_LTZ(500000000000, 3), TIME '13:32:00', DATE '2023-12-02'), "
+                            + "(2, 22, '222', TIMESTAMP '2021-04-17 23:18:36', TO_TIMESTAMP_LTZ(600000000000, 3), TIME '14:32:00', DATE '2023-01-02'), "
+                            + "(4, 44, '444', TIMESTAMP '2021-04-18 23:18:36', TO_TIMESTAMP_LTZ(700000000000, 3), TIME '15:32:00', DATE '2023-02-02')"));
 
                 assertEquals(statement.getUpdateCount(), -1);
 
@@ -120,22 +122,22 @@ public class FlinkStatementStreamingTest extends FlinkJdbcDriverTestBase {
                         assertEquals(resultSet.getObject("time_data"), resultSet.getTime(6));
                         assertEquals(resultSet.getObject("date_data"), resultSet.getDate(7));
                         resultList.add(
-                                String.format(
-                                        "%s,%s,%s,%s,%s,%s,%s",
-                                        resultSet.getLong("id"),
-                                        resultSet.getInt("val"),
-                                        resultSet.getString("str"),
-                                        resultSet.getTimestamp("timestamp1"),
-                                        resultSet.getTimestamp("timestamp2"),
-                                        resultSet.getTime("time_data"),
-                                        resultSet.getDate("date_data")));
+                            String.format(
+                                "%s,%s,%s,%s,%s,%s,%s",
+                                resultSet.getLong("id"),
+                                resultSet.getInt("val"),
+                                resultSet.getString("str"),
+                                resultSet.getTimestamp("timestamp1"),
+                                resultSet.getTimestamp("timestamp2"),
+                                resultSet.getTime("time_data"),
+                                resultSet.getDate("date_data")));
                     }
                     assertThat(resultList)
-                            .containsExactlyInAnyOrder(
-                                    "1,11,111,2021-04-15 23:18:36.0,1982-09-04 15:06:40.0,12:32:00,2023-11-02",
-                                    "3,33,333,2021-04-16 23:18:36.0,1985-11-05 00:53:20.0,13:32:00,2023-12-02",
-                                    "2,22,222,2021-04-17 23:18:36.0,1989-01-05 10:40:00.0,14:32:00,2023-01-02",
-                                    "4,44,444,2021-04-18 23:18:36.0,1992-03-07 20:26:40.0,15:32:00,2023-02-02");
+                        .containsExactlyInAnyOrder(
+                            "1,11,111,2021-04-15 23:18:36.0,1982-09-04 15:06:40.0,12:32:00,2023-11-02",
+                            "3,33,333,2021-04-16 23:18:36.0,1985-11-05 00:53:20.0,13:32:00,2023-12-02",
+                            "2,22,222,2021-04-17 23:18:36.0,1989-01-05 10:40:00.0,14:32:00,2023-01-02",
+                            "4,44,444,2021-04-18 23:18:36.0,1992-03-07 20:26:40.0,15:32:00,2023-02-02");
                 }
 
                 // check that the first column us `stream_state` with Active status
@@ -154,22 +156,22 @@ public class FlinkStatementStreamingTest extends FlinkJdbcDriverTestBase {
                         assertEquals(resultSet.getObject("time_data"), resultSet.getTime(7));
                         assertEquals(resultSet.getObject("date_data"), resultSet.getDate(8));
                         resultList.add(
-                                String.format(
-                                        "%s,%s,%s,%s,%s,%s,%s",
-                                        resultSet.getLong("id"),
-                                        resultSet.getInt("val"),
-                                        resultSet.getString("str"),
-                                        resultSet.getTimestamp("timestamp1"),
-                                        resultSet.getTimestamp("timestamp2"),
-                                        resultSet.getTime("time_data"),
-                                        resultSet.getDate("date_data")));
+                            String.format(
+                                "%s,%s,%s,%s,%s,%s,%s",
+                                resultSet.getLong("id"),
+                                resultSet.getInt("val"),
+                                resultSet.getString("str"),
+                                resultSet.getTimestamp("timestamp1"),
+                                resultSet.getTimestamp("timestamp2"),
+                                resultSet.getTime("time_data"),
+                                resultSet.getDate("date_data")));
                     }
                     assertThat(resultList)
-                            .containsExactlyInAnyOrder(
-                                    "1,11,111,2021-04-15 23:18:36.0,1982-09-04 15:06:40.0,12:32:00,2023-11-02",
-                                    "3,33,333,2021-04-16 23:18:36.0,1985-11-05 00:53:20.0,13:32:00,2023-12-02",
-                                    "2,22,222,2021-04-17 23:18:36.0,1989-01-05 10:40:00.0,14:32:00,2023-01-02",
-                                    "4,44,444,2021-04-18 23:18:36.0,1992-03-07 20:26:40.0,15:32:00,2023-02-02");
+                        .containsExactlyInAnyOrder(
+                            "1,11,111,2021-04-15 23:18:36.0,1982-09-04 15:06:40.0,12:32:00,2023-11-02",
+                            "3,33,333,2021-04-16 23:18:36.0,1985-11-05 00:53:20.0,13:32:00,2023-12-02",
+                            "2,22,222,2021-04-17 23:18:36.0,1989-01-05 10:40:00.0,14:32:00,2023-01-02",
+                            "4,44,444,2021-04-18 23:18:36.0,1992-03-07 20:26:40.0,15:32:00,2023-02-02");
                 }
 
                 // todo: add test for idleness check (check that the first column is `stream_state`
@@ -183,17 +185,17 @@ public class FlinkStatementStreamingTest extends FlinkJdbcDriverTestBase {
                     List<String> resultList = new ArrayList<>();
                     while (resultSet.next()) {
                         resultList.add(
-                                String.format(
-                                        "%s,%s",
-                                        resultSet.getTimestamp("timestamp1"),
-                                        resultSet.getTimestamp("timestamp2")));
+                            String.format(
+                                "%s,%s",
+                                resultSet.getTimestamp("timestamp1"),
+                                resultSet.getTimestamp("timestamp2")));
                     }
                     assertThat(resultList)
-                            .containsExactlyInAnyOrder(
-                                    "2021-04-15 23:18:36.0,1982-09-04 23:06:40.0",
-                                    "2021-04-16 23:18:36.0,1985-11-05 08:53:20.0",
-                                    "2021-04-17 23:18:36.0,1989-01-05 18:40:00.0",
-                                    "2021-04-18 23:18:36.0,1992-03-08 04:26:40.0");
+                        .containsExactlyInAnyOrder(
+                            "2021-04-15 23:18:36.0,1982-09-04 23:06:40.0",
+                            "2021-04-16 23:18:36.0,1985-11-05 08:53:20.0",
+                            "2021-04-17 23:18:36.0,1989-01-05 18:40:00.0",
+                            "2021-04-18 23:18:36.0,1992-03-08 04:26:40.0");
                 }
 
                 assertFalse(statement.execute("SET 'execution.runtime-mode' = 'BATCH'"));
