@@ -1,4 +1,4 @@
-# flink-exness-jdbc-driver
+# Flink JDBC Driver
 The Flink JDBC Driver is a Java library for enabling clients to send Flink SQL to your Flink cluster via the SQL Gateway. Full documentation is available on the Flink [website](https://nightlies.apache.org/flink/flink-docs-master/docs/dev/table/jdbcdriver/).
 
 # Exness contributions:
