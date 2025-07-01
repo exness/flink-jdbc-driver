@@ -51,7 +51,11 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.apache.flink.table.jdbc.utils.DriverUtils.checkNotNull;
 import static org.apache.flink.table.jdbc.utils.DriverUtils.generateRowKindColumnName;
@@ -464,7 +468,7 @@ abstract class FlinkResultSet extends BaseResultSet {
         checkValidRow();
         checkValidColumn(columnIndex);
         try {
-            DataType dataType = enrichedDataTypeList.get(columnIndex-1);
+            DataType dataType = enrichedDataTypeList.get(columnIndex - 1);
             Object object = fieldGetterList.get(columnIndex - 1).getFieldOrNull(currentRow);
             return convertToJavaObject(object, dataType.getLogicalType(), columnIndex);
         } catch (Exception e) {

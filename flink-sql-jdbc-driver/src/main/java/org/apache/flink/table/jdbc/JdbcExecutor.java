@@ -1,5 +1,22 @@
-package org.apache.flink.table.jdbc;
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
+package org.apache.flink.table.jdbc;
 
 import org.apache.flink.annotation.VisibleForTesting;
 import org.apache.flink.client.ClientUtils;
@@ -15,6 +32,7 @@ import org.apache.flink.runtime.rest.util.RestClientException;
 import org.apache.flink.runtime.rest.versioning.RestAPIVersion;
 import org.apache.flink.table.api.SqlParserEOFException;
 import org.apache.flink.table.client.SqlClientException;
+import org.apache.flink.table.client.gateway.Executor;
 import org.apache.flink.table.client.gateway.SqlExecutionException;
 import org.apache.flink.table.client.gateway.StatementResult;
 import org.apache.flink.table.data.RowData;
@@ -41,16 +59,27 @@ import org.apache.flink.table.gateway.service.context.DefaultContext;
 import org.apache.flink.util.CloseableIterator;
 import org.apache.flink.util.NetUtils;
 import org.apache.flink.util.Preconditions;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.flink.table.client.gateway.Executor;
 
 import javax.annotation.Nullable;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URL;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -58,9 +87,9 @@ import java.util.stream.Collectors;
 import static org.apache.flink.table.gateway.rest.handler.session.CloseSessionHandler.CLOSE_MESSAGE;
 import static org.apache.flink.util.ExceptionUtils.firstOrSuppressed;
 
-
 /**
- * Copy-pasted from org.apache.flink.table.client.gateway.ExecutorImpl, added the ability to connect to a https gateway endpoint
+ * Copy-pasted from org.apache.flink.table.client.gateway.ExecutorImpl, added the ability to connect
+ * to a https gateway endpoint.
  */
 class JdbcExecutor implements Executor {
 
@@ -169,9 +198,9 @@ class JdbcExecutor implements Executor {
                     connectionVersion);
             OpenSessionResponseBody response =
                     sendRequest(
-                            OpenSessionHeaders.getInstance(),
-                            EmptyMessageParameters.getInstance(),
-                            new OpenSessionRequestBody(sessionId, flinkConfig.toMap()))
+                                    OpenSessionHeaders.getInstance(),
+                                    EmptyMessageParameters.getInstance(),
+                                    new OpenSessionRequestBody(sessionId, flinkConfig.toMap()))
                             .get();
             this.sessionHandle = new SessionHandle(UUID.fromString(response.getSessionHandle()));
             registry.registerCloseable(this::closeSession);
@@ -204,9 +233,9 @@ class JdbcExecutor implements Executor {
     public void configureSession(String statement) {
         try {
             sendRequest(
-                    ConfigureSessionHeaders.getInstance(),
-                    new SessionMessageParameters(sessionHandle),
-                    new ConfigureSessionRequestBody(statement))
+                            ConfigureSessionHeaders.getInstance(),
+                            new SessionMessageParameters(sessionHandle),
+                            new ConfigureSessionRequestBody(statement))
                     .get();
         } catch (Exception e) {
             throw new SqlExecutionException(
@@ -250,32 +279,32 @@ class JdbcExecutor implements Executor {
                 getOperationHandle(
                         () ->
                                 getResponse(
-                                        executeStatementResponse,
-                                        e -> {
-                                            executorService.submit(
-                                                    () -> {
-                                                        try {
-                                                            ExecuteStatementResponseBody
-                                                                    executeStatementResponseBody =
-                                                                    executeStatementResponse
-                                                                            .get();
-                                                            // close operation in background
-                                                            // to make sure users can not
-                                                            // interrupt the execution.
-                                                            closeOperationAsync(
-                                                                    getOperationHandle(
-                                                                            executeStatementResponseBody
-                                                                                    ::getOperationHandle));
-                                                        } catch (Exception newException) {
-                                                            e.addSuppressed(newException);
-                                                            LOG.error(
-                                                                    "Failed to cancel the interrupted exception.",
-                                                                    e);
-                                                        }
-                                                    });
-                                            return new SqlExecutionException(
-                                                    "Interrupted to get response.", e);
-                                        })
+                                                executeStatementResponse,
+                                                e -> {
+                                                    executorService.submit(
+                                                            () -> {
+                                                                try {
+                                                                    ExecuteStatementResponseBody
+                                                                            executeStatementResponseBody =
+                                                                                    executeStatementResponse
+                                                                                            .get();
+                                                                    // close operation in background
+                                                                    // to make sure users can not
+                                                                    // interrupt the execution.
+                                                                    closeOperationAsync(
+                                                                            getOperationHandle(
+                                                                                    executeStatementResponseBody
+                                                                                            ::getOperationHandle));
+                                                                } catch (Exception newException) {
+                                                                    e.addSuppressed(newException);
+                                                                    LOG.error(
+                                                                            "Failed to cancel the interrupted exception.",
+                                                                            e);
+                                                                }
+                                                            });
+                                                    return new SqlExecutionException(
+                                                            "Interrupted to get response.", e);
+                                                })
                                         .getOperationHandle());
         FetchResultsResponseBody fetchResultsResponse = fetchUtilResultsReady(operationHandle);
         ResultInfo firstResult = fetchResultsResponse.getResults();
@@ -294,10 +323,10 @@ class JdbcExecutor implements Executor {
 
     public List<String> completeStatement(String statement, int position) {
         return getResponse(
-                sendRequest(
-                        CompleteStatementHeaders.getInstance(),
-                        new SessionMessageParameters(sessionHandle),
-                        new CompleteStatementRequestBody(statement, position)))
+                        sendRequest(
+                                CompleteStatementHeaders.getInstance(),
+                                new SessionMessageParameters(sessionHandle),
+                                new CompleteStatementRequestBody(statement, position)))
                 .getCandidates();
     }
 
@@ -374,11 +403,11 @@ class JdbcExecutor implements Executor {
     }
 
     private <
-            M extends MessageHeaders<R, P, U>,
-            U extends MessageParameters,
-            R extends RequestBody,
-            P extends ResponseBody>
-    CompletableFuture<P> sendRequest(M messageHeaders, U messageParameters, R request) {
+                    M extends MessageHeaders<R, P, U>,
+                    U extends MessageParameters,
+                    R extends RequestBody,
+                    P extends ResponseBody>
+            CompletableFuture<P> sendRequest(M messageHeaders, U messageParameters, R request) {
         Preconditions.checkNotNull(connectionVersion, "The connection version should not be null.");
         CustomHeadersDecorator<R, P, U> headers =
                 new CustomHeadersDecorator<>(
@@ -389,15 +418,15 @@ class JdbcExecutor implements Executor {
     }
 
     private <
-            M extends MessageHeaders<R, P, U>,
-            U extends MessageParameters,
-            R extends RequestBody,
-            P extends ResponseBody>
-    CompletableFuture<P> sendRequest(
-            M messageHeaders,
-            U messageParameters,
-            R request,
-            SqlGatewayRestAPIVersion connectionVersion) {
+                    M extends MessageHeaders<R, P, U>,
+                    U extends MessageParameters,
+                    R extends RequestBody,
+                    P extends ResponseBody>
+            CompletableFuture<P> sendRequest(
+                    M messageHeaders,
+                    U messageParameters,
+                    R request,
+                    SqlGatewayRestAPIVersion connectionVersion) {
         try {
             return restClient.sendRequest(
                     gatewayUrl.getHost(),
@@ -440,10 +469,10 @@ class JdbcExecutor implements Executor {
                 Thread.sleep(100);
             }
             return sendRequest(
-                    FetchResultsHeaders.getDefaultInstance(),
-                    new FetchResultsMessageParameters(
-                            sessionHandle, operationHandle, token, rowFormat),
-                    EmptyRequestBody.getInstance())
+                            FetchResultsHeaders.getDefaultInstance(),
+                            new FetchResultsMessageParameters(
+                                    sessionHandle, operationHandle, token, rowFormat),
+                            EmptyRequestBody.getInstance())
                     .get();
         } catch (InterruptedException e) {
             throw interruptedExceptionHandler.apply(e);
@@ -497,33 +526,33 @@ class JdbcExecutor implements Executor {
 
         CustomHeadersDecorator<EmptyRequestBody, GetApiVersionResponseBody, EmptyMessageParameters>
                 headers =
-                new CustomHeadersDecorator<>(
-                        new UrlPrefixDecorator<>(
-                                GetApiVersionHeaders.getInstance(), gatewayUrl.getPath()));
+                        new CustomHeadersDecorator<>(
+                                new UrlPrefixDecorator<>(
+                                        GetApiVersionHeaders.getInstance(), gatewayUrl.getPath()));
         headers.setCustomHeaders(customHttpHeaders);
 
         List<SqlGatewayRestAPIVersion> gatewayVersions =
                 getResponse(
-                        restClient.sendRequest(
-                                gatewayUrl.getHost(),
-                                gatewayUrl.getPort(),
-                                headers,
-                                EmptyMessageParameters.getInstance(),
-                                EmptyRequestBody.getInstance(),
-                                Collections.emptyList(),
-                                // Currently, RestClient always uses the latest REST API
-                                // version to build the targetUrl. However, it's possible
-                                // that the client REST API version is higher than the
-                                // server REST API version. In this case, the gateway will
-                                // report Not Found Error to notify the client.
-                                //
-                                // So, here use the lowest REST API version to get the
-                                // remote gateway version list and then determine the
-                                // connection version.
-                                // TODO: Remove this after the REST Client should allow
-                                // to build the target URL without API version.
-                                Collections.min(
-                                        SqlGatewayRestAPIVersion.getStableVersions())))
+                                restClient.sendRequest(
+                                        gatewayUrl.getHost(),
+                                        gatewayUrl.getPort(),
+                                        headers,
+                                        EmptyMessageParameters.getInstance(),
+                                        EmptyRequestBody.getInstance(),
+                                        Collections.emptyList(),
+                                        // Currently, RestClient always uses the latest REST API
+                                        // version to build the targetUrl. However, it's possible
+                                        // that the client REST API version is higher than the
+                                        // server REST API version. In this case, the gateway will
+                                        // report Not Found Error to notify the client.
+                                        //
+                                        // So, here use the lowest REST API version to get the
+                                        // remote gateway version list and then determine the
+                                        // connection version.
+                                        // TODO: Remove this after the REST Client should allow
+                                        // to build the target URL without API version.
+                                        Collections.min(
+                                                SqlGatewayRestAPIVersion.getStableVersions())))
                         .getVersions().stream()
                         .map(SqlGatewayRestAPIVersion::valueOf)
                         .collect(Collectors.toList());

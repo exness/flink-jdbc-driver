@@ -18,6 +18,11 @@
 
 package org.apache.flink.table.jdbc;
 
+import org.apache.flink.annotation.VisibleForTesting;
+import org.apache.flink.table.client.gateway.Executor;
+import org.apache.flink.table.client.gateway.StatementResult;
+import org.apache.flink.table.jdbc.utils.DatabaseMetaDataUtils;
+
 import javax.annotation.Nullable;
 
 import java.sql.Connection;
@@ -29,10 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import org.apache.flink.annotation.VisibleForTesting;
-import org.apache.flink.table.client.gateway.Executor;
-import org.apache.flink.table.client.gateway.StatementResult;
-import org.apache.flink.table.jdbc.utils.DatabaseMetaDataUtils;
 
 import static org.apache.flink.table.jdbc.utils.DatabaseMetaDataUtils.createCatalogsResultSet;
 import static org.apache.flink.table.jdbc.utils.DatabaseMetaDataUtils.createColumnsResultSet;
@@ -42,9 +43,7 @@ import static org.apache.flink.table.jdbc.utils.DatabaseMetaDataUtils.createSche
 import static org.apache.flink.table.jdbc.utils.DatabaseMetaDataUtils.createTableTypesResultSet;
 import static org.apache.flink.table.jdbc.utils.DatabaseMetaDataUtils.createTablesResultSet;
 
-/**
- * Implementation of {@link java.sql.DatabaseMetaData} for flink jdbc driver.
- */
+/** Implementation of {@link java.sql.DatabaseMetaData} for flink jdbc driver. */
 public class FlinkDatabaseMetaData extends BaseDatabaseMetaData {
     private static final String SEARCH_STRING_ESCAPE = "\\\\";
     private final String url;
@@ -104,11 +103,11 @@ public class FlinkDatabaseMetaData extends BaseDatabaseMetaData {
     }
 
     private void getSchemasForCatalog(
-        List<String> catalogList,
-        Map<String, List<String>> catalogSchemaList,
-        String catalog,
-        @Nullable String schemaPattern)
-        throws SQLException {
+            List<String> catalogList,
+            Map<String, List<String>> catalogSchemaList,
+            String catalog,
+            @Nullable String schemaPattern)
+            throws SQLException {
         catalogList.add(catalog);
         List<String> schemas = new ArrayList<>();
         try (StatementResult schemaResult = schemas()) {
@@ -129,10 +128,10 @@ public class FlinkDatabaseMetaData extends BaseDatabaseMetaData {
     @Override
     public ResultSet getSchemas(String catalog, String schemaPattern) throws SQLException {
         StatementResult result =
-            executor.executeStatement(
-                String.format(
-                    "SHOW DATABASES IN `%s` LIKE '%s'",
-                    unescape(catalog), unescape(schemaPattern)));
+                executor.executeStatement(
+                        String.format(
+                                "SHOW DATABASES IN `%s` LIKE '%s'",
+                                unescape(catalog), unescape(schemaPattern)));
         return DatabaseMetaDataUtils.createSchemasResultSet(statement, result, catalog);
     }
 
@@ -153,20 +152,20 @@ public class FlinkDatabaseMetaData extends BaseDatabaseMetaData {
 
     @Override
     public ResultSet getTables(
-        String catalog, String schemaPattern, String tableNamePattern, String[] types)
-        throws SQLException {
+            String catalog, String schemaPattern, String tableNamePattern, String[] types)
+            throws SQLException {
         final StatementResult result =
-            executor.executeStatement(
-                String.format(
-                    "SHOW TABLES IN `%s`.`%s` LIKE '%s'",
-                    catalog, unescape(schemaPattern), unescape(tableNamePattern)));
+                executor.executeStatement(
+                        String.format(
+                                "SHOW TABLES IN `%s`.`%s` LIKE '%s'",
+                                catalog, unescape(schemaPattern), unescape(tableNamePattern)));
         return createTablesResultSet(statement, result, catalog, unescape(schemaPattern));
     }
 
     @Override
     public ResultSet getColumns(
-        String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern)
-        throws SQLException {
+            String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern)
+            throws SQLException {
         String schema = unescape(schemaPattern);
         String table = unescape(tableNamePattern);
         // Flink SQL does not support `%` for table name in `SHOW COLUMNS`
@@ -174,16 +173,16 @@ public class FlinkDatabaseMetaData extends BaseDatabaseMetaData {
             return createEmptyColumnsResultSet(statement);
         }
         String query =
-            String.format(
-                "SHOW COLUMNS IN `%s`.`%s`.`%s` LIKE '%s'",
-                catalog, schema, table, unescape(columnNamePattern));
+                String.format(
+                        "SHOW COLUMNS IN `%s`.`%s`.`%s` LIKE '%s'",
+                        catalog, schema, table, unescape(columnNamePattern));
         final StatementResult result = executor.executeStatement(query);
         return createColumnsResultSet(statement, result, catalog, schema, table);
     }
 
     @Override
     public ResultSet getPrimaryKeys(String catalog, String schema, String table)
-        throws SQLException {
+            throws SQLException {
         return createPrimaryKeysResultSet(statement, catalog, schema, table);
     }
 
@@ -253,9 +252,7 @@ public class FlinkDatabaseMetaData extends BaseDatabaseMetaData {
         return false;
     }
 
-    /**
-     * In flink null value will be used as low value for sort.
-     */
+    /** In flink null value will be used as low value for sort. */
     @Override
     public boolean nullsAreSortedLow() throws SQLException {
         return true;
@@ -401,9 +398,7 @@ public class FlinkDatabaseMetaData extends BaseDatabaseMetaData {
         return false;
     }
 
-    /**
-     * Flink sql is mixed case as sensitive.
-     */
+    /** Flink sql is mixed case as sensitive. */
     @Override
     public boolean supportsMixedCaseIdentifiers() throws SQLException {
         return true;
@@ -419,17 +414,13 @@ public class FlinkDatabaseMetaData extends BaseDatabaseMetaData {
         return false;
     }
 
-    /**
-     * Flink sql is mixed case as sensitive.
-     */
+    /** Flink sql is mixed case as sensitive. */
     @Override
     public boolean storesMixedCaseIdentifiers() throws SQLException {
         return true;
     }
 
-    /**
-     * Flink sql is mixed case as sensitive.
-     */
+    /** Flink sql is mixed case as sensitive. */
     @Override
     public boolean supportsMixedCaseQuotedIdentifiers() throws SQLException {
         return true;
@@ -445,9 +436,7 @@ public class FlinkDatabaseMetaData extends BaseDatabaseMetaData {
         return false;
     }
 
-    /**
-     * Flink sql is mixed case as sensitive.
-     */
+    /** Flink sql is mixed case as sensitive. */
     @Override
     public boolean storesMixedCaseQuotedIdentifiers() throws SQLException {
         return true;
@@ -478,9 +467,7 @@ public class FlinkDatabaseMetaData extends BaseDatabaseMetaData {
         return true;
     }
 
-    /**
-     * Null value plus non-null in flink will be null result.
-     */
+    /** Null value plus non-null in flink will be null result. */
     @Override
     public boolean nullPlusNonNullIsNull() throws SQLException {
         return true;
@@ -611,9 +598,7 @@ public class FlinkDatabaseMetaData extends BaseDatabaseMetaData {
         return "catalog";
     }
 
-    /**
-     * Catalog name appears at the start of full name.
-     */
+    /** Catalog name appears at the start of full name. */
     @Override
     public boolean isCatalogAtStart() throws SQLException {
         return true;

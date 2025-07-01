@@ -476,7 +476,6 @@ public class DatabaseMetaDataUtils {
                 false);
     }
 
-
     /**
      * Retrieves a description of the given table's primary key columns. They are ordered by
      * COLUMN_NAME.

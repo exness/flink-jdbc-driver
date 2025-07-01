@@ -18,12 +18,6 @@
 
 package org.apache.flink.table.jdbc;
 
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.List;
-import java.util.Queue;
 import org.apache.flink.table.catalog.ResolvedSchema;
 import org.apache.flink.table.client.gateway.StatementResult;
 import org.apache.flink.table.client.gateway.TypedResult;
@@ -39,9 +33,14 @@ import org.apache.flink.table.types.logical.LogicalType;
 import org.apache.flink.table.types.logical.RowType;
 import org.apache.flink.types.RowKind;
 
-/**
- * ResultSet for flink jdbc driver which supports streaming mode.
- */
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.List;
+import java.util.Queue;
+
+/** ResultSet for flink jdbc driver which supports streaming mode. */
 public class FlinkStreamingResultSet extends FlinkResultSet {
     private final ChangelogCollectResult changelog;
     private final long heartBeatIntervalMs;
@@ -50,24 +49,24 @@ public class FlinkStreamingResultSet extends FlinkResultSet {
     private Long idleStartTimeMs = null;
 
     public FlinkStreamingResultSet(
-        Statement statement,
-        StatementResult result,
-        boolean asChangeLog,
-        long heartBeatIntervalMs) {
+            Statement statement,
+            StatementResult result,
+            boolean asChangeLog,
+            long heartBeatIntervalMs) {
         this(
-            statement,
-            new ChangelogCollectResult(result),
-            result.getResultSchema(),
-            asChangeLog,
-            heartBeatIntervalMs);
+                statement,
+                new ChangelogCollectResult(result),
+                result.getResultSchema(),
+                asChangeLog,
+                heartBeatIntervalMs);
     }
 
     public FlinkStreamingResultSet(
-        Statement statement,
-        ChangelogCollectResult changelog,
-        ResolvedSchema schema,
-        boolean asChangeLog,
-        long heartBeatIntervalMs) {
+            Statement statement,
+            ChangelogCollectResult changelog,
+            ResolvedSchema schema,
+            boolean asChangeLog,
+            long heartBeatIntervalMs) {
         super(statement, schema, asChangeLog, heartBeatIntervalMs > 0);
         this.changelog = changelog;
         this.heartBeatIntervalMs = heartBeatIntervalMs;
@@ -123,12 +122,11 @@ public class FlinkStreamingResultSet extends FlinkResultSet {
                 return result;
             case MAP:
                 return new GenericMapData(Collections.emptyMap());
-            case MULTISET: //TODO
+            case MULTISET: // TODO
             default:
                 throw new SQLException("Unsupported data type: " + dataType);
         }
     }
-
 
     private boolean tryIterate() throws SQLException {
         checkClosed();
@@ -163,7 +161,7 @@ public class FlinkStreamingResultSet extends FlinkResultSet {
         if (idleStartTimeMs == null) {
             idleStartTimeMs = System.currentTimeMillis();
         } else if (heartBeatIntervalMs > 0
-            && System.currentTimeMillis() - idleStartTimeMs > heartBeatIntervalMs) {
+                && System.currentTimeMillis() - idleStartTimeMs > heartBeatIntervalMs) {
             // create a heartbeat record -- a record with only the `streaming_state` column filled
             GenericRowData genericRow = new GenericRowData(dataTypeList.size());
             for (int i = 0; i < dataTypeList.size(); ++i) {

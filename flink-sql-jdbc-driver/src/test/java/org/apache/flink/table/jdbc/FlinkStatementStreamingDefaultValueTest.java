@@ -18,13 +18,15 @@
 
 package org.apache.flink.table.jdbc;
 
+import org.apache.flink.table.data.TimestampData;
+
+import org.junit.jupiter.api.Test;
+
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.Properties;
-import org.apache.flink.table.data.TimestampData;
-import org.junit.jupiter.api.Test;
 
 import static org.apache.flink.table.jdbc.FlinkDriverOptions.RESULT_MODE;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -33,9 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Tests for flink statement.
- */
+/** Tests for flink statement. */
 public class FlinkStatementStreamingDefaultValueTest extends FlinkJdbcDriverTestBase {
     @Test
     public void testResultSetDefaultValues() throws Exception {
@@ -47,34 +47,32 @@ public class FlinkStatementStreamingDefaultValueTest extends FlinkJdbcDriverTest
             try (Statement statement = connection.createStatement()) {
 
                 statement.execute(
-                    "CREATE TABLE test_table ("
-                        + "bool BOOLEAN NOT NULL, "
-                        + "num SMALLINT NOT NULL, "
-                        + "dbl DOUBLE NOT NULL, "
-                        + "bin BINARY NOT NULL, "
-                        + "vbin VARBINARY NOT NULL, "
-                        + "chr CHAR NOT NULL, "
-                        + "vchr VARCHAR NOT NULL, "
-                        + "tmstp TIMESTAMP_LTZ(3) NOT NULL, "
-                        + "dte DATE NOT NULL, "
-                        + "dcml DECIMAL NOT NULL ,"
-                        + "tint TINYINT NOT NULL, "
-                        + "sint SMALLINT NOT NULL,"
-                        + "nint INTEGER NOT NULL, "
-                        + "twotz TIME WITHOUT TIME ZONE NOT NULL, "
-                        + "bgint BIGINT NOT NULL, "
-                        + "flt FLOAT NOT NULL, "
-                        + "tmstpwotz TIMESTAMP NOT NULL,"
-                        +
-                        "`row` ROW<int1 INTEGER NOT NULL, int2 INTEGER, str1 STRING NOT NULL, nested_row_not_null ROW<str2 STRING, int4 INT NOT NULL> NOT NULL, nested_row_null ROW<int5 int not null>> NOT NULL, "
-                        + "`map` MAP<STRING, INT> NOT NULL"
-                        // TODO "`array` ARRAY<INT> NOT NULL"
-                        // TODO ms "MULTISET<INT NOT NULL> NOT NULL"
-                        + ") WITH ("
-                        + "'connector' = 'datagen', "
-                        + "'rows-per-second' = '1'"
-                        + ")"
-                );
+                        "CREATE TABLE test_table ("
+                                + "bool BOOLEAN NOT NULL, "
+                                + "num SMALLINT NOT NULL, "
+                                + "dbl DOUBLE NOT NULL, "
+                                + "bin BINARY NOT NULL, "
+                                + "vbin VARBINARY NOT NULL, "
+                                + "chr CHAR NOT NULL, "
+                                + "vchr VARCHAR NOT NULL, "
+                                + "tmstp TIMESTAMP_LTZ(3) NOT NULL, "
+                                + "dte DATE NOT NULL, "
+                                + "dcml DECIMAL NOT NULL ,"
+                                + "tint TINYINT NOT NULL, "
+                                + "sint SMALLINT NOT NULL,"
+                                + "nint INTEGER NOT NULL, "
+                                + "twotz TIME WITHOUT TIME ZONE NOT NULL, "
+                                + "bgint BIGINT NOT NULL, "
+                                + "flt FLOAT NOT NULL, "
+                                + "tmstpwotz TIMESTAMP NOT NULL,"
+                                + "`row` ROW<int1 INTEGER NOT NULL, int2 INTEGER, str1 STRING NOT NULL, nested_row_not_null ROW<str2 STRING, int4 INT NOT NULL> NOT NULL, nested_row_null ROW<int5 int not null>> NOT NULL, "
+                                + "`map` MAP<STRING, INT> NOT NULL"
+                                // TODO "`array` ARRAY<INT> NOT NULL"
+                                // TODO ms "MULTISET<INT NOT NULL> NOT NULL"
+                                + ") WITH ("
+                                + "'connector' = 'datagen', "
+                                + "'rows-per-second' = '1'"
+                                + ")");
 
                 statement.execute("SET 'jdbc.streaming.result.heartbeat.interval.ms' = '1000'");
 
@@ -98,13 +96,16 @@ public class FlinkStatementStreamingDefaultValueTest extends FlinkJdbcDriverTest
                     assertEquals(0, resultSet.getInt("nint"));
                     assertEquals(0, resultSet.getInt("dte"));
                     assertEquals(0, resultSet.getInt("twotz"));
-                    assertEquals(TimestampData.fromEpochMillis(0).toTimestamp(), resultSet.getTimestamp("tmstp"));
+                    assertEquals(
+                            TimestampData.fromEpochMillis(0).toTimestamp(),
+                            resultSet.getTimestamp("tmstp"));
                     assertEquals(0L, resultSet.getLong("bgint"));
                     assertEquals(0, resultSet.getFloat("flt"));
                     assertEquals(0, resultSet.getInt("tmstpwotz"));
                     assertEquals(Collections.emptyMap(), resultSet.getObject("map"));
-                    assertEquals("{\"int1\":0,\"int2\":null,\"str1\":\"\",\"nested_row_not_null\":{\"str2\":null,\"int4\":0},\"nested_row_null\":null}",
-                        resultSet.getObject("row"));
+                    assertEquals(
+                            "{\"int1\":0,\"int2\":null,\"str1\":\"\",\"nested_row_not_null\":{\"str2\":null,\"int4\":0},\"nested_row_null\":null}",
+                            resultSet.getObject("row"));
                 }
 
                 assertTrue(statement.execute("SHOW JOBS"));
