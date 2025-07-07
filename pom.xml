@@ -743,7 +743,7 @@ under the License.
 						<configuration>
 							<property>rootDir</property>
 							<project>
-								<groupId>org.apache.flink</groupId>
+								<groupId>com.exness</groupId>
 								<artifactId>flink-exness-jdbc-driver</artifactId>
 							</project>
 						</configuration>
