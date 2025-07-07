@@ -25,13 +25,12 @@
 
     <parent>
         <artifactId>flink-exness-jdbc-driver</artifactId>
-        <groupId>org.apache.flink</groupId>
-        <version>1.20-SNAPSHOT</version>
+        <groupId>com.exness</groupId>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>flink-sql-jdbc-driver-bundle</artifactId>
     <name>Flink : Table : SQL Jdbc Driver Bundle</name>
-    <version>1.20-EXNESS-01</version>
 
     <packaging>jar</packaging>
 
