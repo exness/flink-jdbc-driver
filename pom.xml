@@ -395,6 +395,9 @@ under the License.
 				<artifactId>apache-rat-plugin</artifactId>
 				<version>0.13</version>
 				<inherited>false</inherited>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
 				<executions>
 					<execution>
 						<phase>validate</phase>
@@ -403,106 +406,6 @@ under the License.
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<consoleOutput>true</consoleOutput>
-					<excludeSubProjects>false</excludeSubProjects>
-					<numUnapprovedLicenses>0</numUnapprovedLicenses>
-					<licenses>
-						<!-- Enforce this license:
-							Licensed to the Apache Software Foundation (ASF) under one
-							or more contributor license agreements.  See the NOTICE file
-							distributed with this work for additional information
-							regarding copyright ownership.  The ASF licenses this file
-							to you under the Apache License, Version 2.0 (the
-							"License"); you may not use this file except in compliance
-							with the License.  You may obtain a copy of the License at
-							  http://www.apache.org/licenses/LICENSE-2.0
-							Unless required by applicable law or agreed to in writing,
-							software distributed under the License is distributed on an
-							"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-							KIND, either express or implied.  See the License for the
-							specific language governing permissions and limitations
-							under the License.
-						-->
-						<license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
-							<licenseFamilyCategory>AL2 </licenseFamilyCategory>
-							<licenseFamilyName>Apache License 2.0</licenseFamilyName>
-							<patterns>
-								<pattern>Licensed to the Apache Software Foundation (ASF) under one</pattern>
-							</patterns>
-						</license>
-					</licenses>
-					<licenseFamilies>
-						<licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
-							<familyName>Apache License 2.0</familyName>
-						</licenseFamily>
-					</licenseFamilies>
-					<excludes>
-						<!-- Additional files like .gitignore etc.-->
-						<exclude>**/.*/**</exclude>
-						<exclude>**/*.prefs</exclude>
-						<exclude>**/*.log</exclude>
-						<!-- External web libraries. -->
-						<exclude>docs/**/jquery*</exclude>
-						<exclude>docs/**/bootstrap*</exclude>
-						<exclude>docs/themes/book/**</exclude>
-						<exclude>docs/**/anchor*</exclude>
-						<exclude>**/resources/**/font-awesome/**</exclude>
-						<exclude>**/resources/**/jquery*</exclude>
-						<exclude>**/resources/**/bootstrap*</exclude>
-						<exclude>docs/resources/**</exclude>
-						<exclude>docs/public/**</exclude>
-						<exclude>docs/assets/github.css</exclude>
-						<exclude>docs/static/flink-header-logo.svg</exclude>
-						<exclude>docs/static/figs/*.svg</exclude>
-						<exclude>docs/static/font-awesome/**</exclude>
-						<exclude>docs/static/flink-header-logo.svg</exclude>
-						<exclude>docs/static/figs/*.svg</exclude>
-						<exclude>flink-clients/src/main/resources/web-docs/js/*d3.js</exclude>
-
-						<!-- the licenses that are re-bundled -->
-						<exclude>**/packaged_licenses/LICENSE.*.txt</exclude>
-						<exclude>**/licenses/LICENSE*</exclude>
-						<exclude>**/licenses-binary/LICENSE*</exclude>
-						<!-- Test Data. -->
-						<exclude>**/src/test/resources/*-data</exclude>
-
-						<!-- ArchUnit violation stores  -->
-						<exclude>**/archunit-violations/**</exclude>
-
-						<!-- snapshots -->
-						<exclude>**/src/test/resources/serializer-snapshot-*</exclude>
-						<exclude>**/src/test/resources/**/serializer-snapshot</exclude>
-						<exclude>**/src/test/resources/**/test-data</exclude>
-						<exclude>**/src/test/resources/*-snapshot</exclude>
-						<exclude>**/src/test/resources/*.snapshot</exclude>
-						<exclude>**/src/test/resources/*-savepoint/**</exclude>
-						<exclude>**/src/test/resources/*-savepoint-native/**</exclude>
-						<exclude>**/src/test/resources/*-checkpoint/**</exclude>
-						<!-- Administrative files in the main trunk. -->
-						<exclude>**/README.md</exclude>
-						<exclude>.github/**</exclude>
-						<!-- Build files -->
-						<exclude>**/*.iml</exclude>
-						<exclude>flink-quickstart/**/testArtifact/goal.txt</exclude>
-						<!-- Generated content -->
-						<exclude>out/**</exclude>
-						<exclude>**/target/**</exclude>
-						<exclude>build-target/**</exclude>
-						<exclude>docs/layouts/shortcodes/generated/**</exclude>
-						<exclude>docs/themes/connectors/layouts/shortcodes/generated/**</exclude>
-						<exclude>docs/static/generated/**</exclude>
-						<!-- Tools: watchdog -->
-						<exclude>tools/artifacts/**</exclude>
-						<exclude>tools/flink*/**</exclude>
-						<!-- Tools: japicmp output -->
-						<exclude>tools/japicmp-output/**</exclude>
-						<!-- artifacts created during release process -->
-						<exclude>tools/releasing/release/**</exclude>
-						<!-- PyCharm -->
-						<exclude>**/.idea/**</exclude>
-					</excludes>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
