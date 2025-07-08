@@ -30,6 +30,6 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
 
       - name: Publish to Maven Central
-        run: mvn --batch-mode clean deploy -P release -Drevision=${{ github.ref_name }} -X -e
+        run: mvn --batch-mode clean deploy -P release -Drevision=${{ github.ref_name }}
         env:
           GPG_TTY: $(tty) 
