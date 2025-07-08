@@ -18,7 +18,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
-          server-id: 'central-publisher'
+          server-id: 'central'
           server-username: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
           server-password: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
 
@@ -33,3 +33,5 @@ jobs:
         run: mvn --batch-mode clean deploy -P release -Drevision=${{ github.ref_name }}
         env:
           GPG_TTY: $(tty) 
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}

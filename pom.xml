@@ -1132,7 +1132,7 @@ under the License.
           <version>0.8.0</version>
           <extensions>true</extensions>
           <configuration>
-            <publishingServerId>central-publisher</publishingServerId>
+            <publishingServerId>central</publishingServerId>
             <autoPublish>true</autoPublish>
             <waitUntil>published</waitUntil>
           </configuration>
