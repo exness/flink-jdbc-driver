@@ -21,7 +21,7 @@ jobs:
           server-id: 'central'
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-private-key: GPG_TTY
 
       - name: Import GPG key
         if: env.GPG_PRIVATE_KEY != ''
