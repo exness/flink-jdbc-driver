@@ -18,7 +18,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
-          server-id: 'central'
+          server-id: 'central-publisher'
           server-username: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
           server-password: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
 
