@@ -28,10 +28,33 @@ under the License.
 
 	<groupId>com.exness</groupId>
 	<artifactId>flink-exness-jdbc-driver</artifactId>
-	<version>${revision}</version>
+	<version>1.20.1</version>
 
 	<name>Flink Exness JDBC Driver</name>
 	<packaging>pom</packaging>
+
+	<description>Flink JDBC Driver for Exness</description>
+	<url>https://github.com/exness/flink-jdbc-driver/</url>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<url>https://github.com/exness/flink-jdbc-driver/</url>
+		<connection>scm:git:git://github.com/exness/flink-jdbc-driver.git</connection>
+		<developerConnection>scm:git:ssh://github.com/exness/flink-jdbc-driver.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+	<developers>
+		<developer>
+			<id>anonymous</id>
+			<name>Anonymous</name>
+			<email>noreply@exness.com</email>
+		</developer>
+	</developers>
 
 	<repositories>
 		<repository>
@@ -410,6 +433,14 @@ under the License.
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>3.3.1</version>
+				<configuration>
+					<configLocation>tools/maven/checkstyle.xml</configLocation>
+					<suppressionsLocation>tools/maven/suppressions.xml</suppressionsLocation>
+					<encoding>UTF-8</encoding>
+					<consoleOutput>true</consoleOutput>
+					<failsOnError>true</failsOnError>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
@@ -751,19 +782,21 @@ under the License.
 				</executions>
 			</plugin>
 
-			<plugin>
-				<groupId>org.cyclonedx</groupId>
-				<artifactId>cyclonedx-maven-plugin</artifactId>
-				<version>2.7.7</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>makeBom</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+			<!--
+<plugin>
+  <groupId>org.cyclonedx</groupId>
+  <artifactId>cyclonedx-maven-plugin</artifactId>
+  <version>2.7.7</version>
+  <executions>
+    <execution>
+      <phase>package</phase>
+      <goals>
+        <goal>makeBom</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+-->
 		</plugins>
 
 		<pluginManagement>
@@ -1096,6 +1129,13 @@ under the License.
               </goals>
             </execution>
           </executions>
+          <configuration>
+            <gpgArguments>
+              <arg>--pinentry-mode</arg>
+              <arg>loopback</arg>
+            </gpgArguments>
+            <skip>false</skip>
+          </configuration>
         </plugin>
         <!-- Sources JAR -->
         <plugin>
@@ -1132,9 +1172,9 @@ under the License.
           <version>0.8.0</version>
           <extensions>true</extensions>
           <configuration>
-            <publishingServerId>central</publishingServerId>
-            <autoPublish>true</autoPublish>
-            <waitUntil>published</waitUntil>
+             <publishingServerId>central</publishingServerId>
+             <autoPublish>true</autoPublish>
+             <waitUntil>published</waitUntil>
           </configuration>
         </plugin>
       </plugins>

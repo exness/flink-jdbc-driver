@@ -17,22 +17,18 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          cache: 'maven'
           server-id: 'central'
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
-          gpg-private-key: GPG_TTY
+          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
-      - name: Import GPG key
-        if: env.GPG_PRIVATE_KEY != ''
-        run: |
-          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      - name: Set version
+        run: mvn versions:set -DnewVersion=${{ github.ref_name }}
 
       - name: Publish to Maven Central
-        run: mvn --batch-mode clean deploy -P release -Drevision=${{ github.ref_name }}
+        run: mvn --batch-mode clean deploy -P release
         env:
-          GPG_TTY: $(tty) 
           MAVEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_SIGNING_KEY_PASSWORD }}

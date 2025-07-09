@@ -26,11 +26,33 @@
     <parent>
         <artifactId>flink-exness-jdbc-driver</artifactId>
         <groupId>com.exness</groupId>
-        <version>${revision}</version>
+        <version>1.20.1</version>
     </parent>
 
     <artifactId>flink-sql-jdbc-driver</artifactId>
     <name>Flink : Table : SQL Jdbc Driver</name>
+    <description>Flink JDBC Driver for Exness</description>
+    <url>https://github.com/exness/flink-jdbc-driver/</url>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <url>https://github.com/exness/flink-jdbc-driver/</url>
+        <connection>scm:git:git://github.com/exness/flink-jdbc-driver.git</connection>
+        <developerConnection>scm:git:ssh://github.com/exness/flink-jdbc-driver.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    <developers>
+        <developer>
+            <id>anonymous</id>
+            <name>Anonymous</name>
+            <email>noreply@exness.com</email>
+        </developer>
+    </developers>
 
     <packaging>jar</packaging>
 
@@ -94,6 +116,8 @@
     </dependencies>
 
     <build>
+        <plugins>
+        </plugins>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
