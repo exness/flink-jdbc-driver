@@ -23,6 +23,21 @@ public class FlinkDriverOptions {
                                     + "the final state (records with RowKind=INSERT, UPDATE_AFTER). "
                                     + "CHANGELOG means the driver will show all the records. If CHANGELOG "
                                     + "is enabled, the driver will add the column `row_kind` to the ResultSet.");
+    public static final ConfigOption<String> AUTH_LOGIN_ENDPOINT =
+            ConfigOptions.key("jdbc.auth.login.endpoint")
+                    .stringType()
+                    .noDefaultValue()
+                    .withDescription("Login endpoint");
+    public static final ConfigOption<String> AUTH_ACCESS_TOKEN_ENDPOINT =
+            ConfigOptions.key("jdbc.auth.access-token.endpoint")
+                    .stringType()
+                    .noDefaultValue()
+                    .withDescription("Access token endpoint");
+    public static final ConfigOption<String> AUTH_TOKEN =
+            ConfigOptions.key("jdbc.auth.token")
+                    .stringType()
+                    .noDefaultValue()
+                    .withDescription("Auth token");
 
     private FlinkDriverOptions() {}
 }

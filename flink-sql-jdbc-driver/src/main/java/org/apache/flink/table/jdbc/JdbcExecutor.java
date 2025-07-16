@@ -220,13 +220,14 @@ class JdbcExecutor implements Executor {
                     heartbeatInterval,
                     TimeUnit.MILLISECONDS);
         } catch (Exception e) {
+            System.out.println("EXCEPTION: " + e.getCause());
             try {
                 registry.close();
             } catch (Throwable t) {
                 e.addSuppressed(t);
             }
 
-            throw new SqlClientException("Failed to create the executor.", e);
+            throw new SqlClientException("Failed to create the executor.", e.getCause());
         }
     }
 
