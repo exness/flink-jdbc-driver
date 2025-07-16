@@ -213,11 +213,14 @@ public class FlinkStatement extends BaseStatement {
         try {
             return executor.executeStatement(sql);
         } catch (SqlExecutionException e) {
-            final String rootCause = StackTraceParser.extractRootCause(e.getCause().getMessage());
+            final String rootCause =
+                    StackTraceParser.extractRootCause(
+                            e.getCause() == null ? null : e.getCause().getMessage());
             if (rootCause != null) {
                 throw new SQLException(rootCause, e.getCause());
             }
-            throw new SQLException("unknown error", e.getCause());
+            throw new SQLException(
+                    e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
         }
     }
 

@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -94,5 +95,23 @@ public class FlinkConnectionTest extends FlinkJdbcDriverTestBase {
             assertEquals("val33", clientInfo.getProperty("key3"));
             assertEquals("val44", clientInfo.getProperty("key4"));
         }
+    }
+
+    @Test
+    public void testExecutorSelectionWithAuthToken() throws Exception {
+        Properties properties = new Properties();
+        properties.setProperty("jdbc.auth.token", "dummy-refresh-token");
+        properties.setProperty("jdbc.auth.access_token_endpoint", "http://custom/token");
+        properties.setProperty("jdbc.auth.login_endpoint", "http://custom/login");
+        FlinkConnection connection = new FlinkConnection(getDriverUri(properties));
+
+        assertInstanceOf(AuthAwareJdbcExecutor.class, connection.getExecutor());
+    }
+
+    @Test
+    public void testExecutorSelectionWithoutAuthToken() throws Exception {
+        Properties properties = new Properties();
+        FlinkConnection connection = new FlinkConnection(getDriverUri(properties));
+        assertInstanceOf(JdbcExecutor.class, connection.getExecutor());
     }
 }
