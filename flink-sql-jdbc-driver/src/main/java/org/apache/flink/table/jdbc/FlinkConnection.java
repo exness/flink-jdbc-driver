@@ -43,6 +43,7 @@ import java.util.Properties;
 import java.util.UUID;
 
 import static org.apache.flink.table.jdbc.utils.DriverUtils.checkArgument;
+import static org.apache.flink.table.jdbc.utils.DriverUtils.jdbcToHttpUrl;
 
 /**
  * Connection to flink sql gateway for jdbc driver. Notice that the connection is not thread safe.
@@ -58,15 +59,50 @@ public class FlinkConnection extends BaseConnection {
         this.url = driverUri.getURL();
         this.statements = new ArrayList<>();
 
-        this.executor =
-                new JdbcExecutor(
-                        new DefaultContext(
-                                DriverUtils.fromProperties(driverUri.getProperties()),
-                                Collections.emptyList()),
-                        driverUri.getAddress(),
-                        UUID.randomUUID().toString(),
-                        RowFormat.JSON);
+        final String refreshToken =
+                (String)
+                        driverUri
+                                .getProperties()
+                                .getOrDefault(FlinkDriverOptions.AUTH_TOKEN.key(), null);
 
+        if (refreshToken != null) {
+            String accessTokenEndpoint =
+                    (String)
+                            driverUri
+                                    .getProperties()
+                                    .getOrDefault(
+                                            FlinkDriverOptions.AUTH_ACCESS_TOKEN_ENDPOINT.key(),
+                                            jdbcToHttpUrl(url, "/token"));
+
+            String loginEndpoint =
+                    (String)
+                            driverUri
+                                    .getProperties()
+                                    .getOrDefault(
+                                            FlinkDriverOptions.AUTH_LOGIN_ENDPOINT.key(),
+                                            jdbcToHttpUrl(url, "/login"));
+
+            this.executor =
+                    new AuthAwareJdbcExecutor(
+                            new DefaultContext(
+                                    DriverUtils.fromProperties(driverUri.getProperties()),
+                                    Collections.emptyList()),
+                            driverUri.getAddress(),
+                            UUID.randomUUID().toString(),
+                            RowFormat.JSON,
+                            refreshToken,
+                            accessTokenEndpoint,
+                            loginEndpoint);
+        } else {
+            this.executor =
+                    new JdbcExecutor(
+                            new DefaultContext(
+                                    DriverUtils.fromProperties(driverUri.getProperties()),
+                                    Collections.emptyList()),
+                            driverUri.getAddress(),
+                            UUID.randomUUID().toString(),
+                            RowFormat.JSON);
+        }
         driverUri.getCatalog().ifPresent(this::setSessionCatalog);
         driverUri.getDatabase().ifPresent(this::setSessionSchema);
     }
@@ -264,13 +300,13 @@ public class FlinkConnection extends BaseConnection {
         statements.remove(statement);
     }
 
-    // TODO We currently do not support this, but we can't throw a SQLException here because we want
-    // to support jdbc tools such as beeline and sqlline.
-    @Override
-    public void setReadOnly(boolean readOnly) throws SQLException {}
-
     @Override
     public boolean isReadOnly() throws SQLException {
         return true;
     }
+
+    // TODO We currently do not support this, but we can't throw a SQLException here because we want
+    // to support jdbc tools such as beeline and sqlline.
+    @Override
+    public void setReadOnly(boolean readOnly) throws SQLException {}
 }
