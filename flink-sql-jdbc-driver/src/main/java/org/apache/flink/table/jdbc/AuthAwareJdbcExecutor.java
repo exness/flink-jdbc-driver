@@ -116,7 +116,6 @@ class AuthAwareJdbcExecutor extends JdbcExecutor {
                 LOG.info("Added Authorization header with access token.");
                 return;
             } catch (AuthUtils.NotAuthorizedException e) {
-                System.out.println("qqq Not authorized exception");
                 openLoginPage(loginEndpoint);
                 throw new SqlExecutionException(AUTH_TOKEN_ERROR_MSG);
             } catch (IOException e) {
@@ -137,7 +136,6 @@ class AuthAwareJdbcExecutor extends JdbcExecutor {
 
     @Override
     public StatementResult executeStatement(String statement) {
-        System.out.println("qqq Executing statement: " + statement);
         try {
             return super.executeStatement(statement);
         } catch (SqlExecutionException e) {
