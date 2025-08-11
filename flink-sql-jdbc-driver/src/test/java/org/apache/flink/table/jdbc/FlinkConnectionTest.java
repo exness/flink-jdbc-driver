@@ -103,15 +103,16 @@ public class FlinkConnectionTest extends FlinkJdbcDriverTestBase {
         properties.setProperty("jdbc.auth.token", "dummy-refresh-token");
         properties.setProperty("jdbc.auth.access_token_endpoint", "http://custom/token");
         properties.setProperty("jdbc.auth.login_endpoint", "http://custom/login");
-        FlinkConnection connection = new FlinkConnection(getDriverUri(properties));
-
-        assertInstanceOf(AuthAwareJdbcExecutor.class, connection.getExecutor());
+        try (FlinkConnection connection = new FlinkConnection(getDriverUri(properties))) {
+            assertInstanceOf(AuthAwareJdbcExecutor.class, connection.getExecutor());
+        }
     }
 
     @Test
     public void testExecutorSelectionWithoutAuthToken() throws Exception {
         Properties properties = new Properties();
-        FlinkConnection connection = new FlinkConnection(getDriverUri(properties));
-        assertInstanceOf(JdbcExecutor.class, connection.getExecutor());
+        try (FlinkConnection connection = new FlinkConnection(getDriverUri(properties))) {
+            assertEquals(JdbcExecutor.class, connection.getExecutor().getClass());
+        }
     }
 }
