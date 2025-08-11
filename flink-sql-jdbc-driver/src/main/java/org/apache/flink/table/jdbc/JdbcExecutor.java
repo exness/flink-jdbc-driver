@@ -226,7 +226,7 @@ class JdbcExecutor implements Executor {
                 e.addSuppressed(t);
             }
 
-            throw new SqlClientException("Failed to create the executor.", e.getCause());
+            throw new SqlClientException("Failed to create the executor.", e);
         }
     }
 
