@@ -138,4 +138,13 @@ public class DriverUtils {
         }
         return result.toString();
     }
+
+    public static String jdbcToHttpUrl(String driverUri, String suffix) {
+        if (!driverUri.startsWith("jdbc:flink://")) {
+            throw new IllegalArgumentException("Invalid driverUri: " + driverUri);
+        }
+        String address = driverUri.substring("jdbc:flink://".length());
+        // todo: change to https
+        return "http://" + address + (suffix.startsWith("/") ? suffix : "/" + suffix);
+    }
 }
