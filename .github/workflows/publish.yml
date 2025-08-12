@@ -27,7 +27,7 @@ jobs:
         run: mvn versions:set -DnewVersion=${{ github.ref_name }}
 
       - name: Publish to Maven Central
-        run: mvn --batch-mode clean deploy -P release
+        run: mvn -B -P release -pl :flink-sql-jdbc-driver-bundle -am deploy
         env:
           MAVEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
