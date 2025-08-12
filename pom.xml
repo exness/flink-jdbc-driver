@@ -383,7 +383,7 @@ under the License.
 			<dependency>
 				<groupId>org.apache.flink</groupId>
 				<artifactId>flink-test-utils-junit</artifactId>
-				<version>${project.version}</version>
+				<version>${flink.version}</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -1069,7 +1069,7 @@ under the License.
 							<dependency>
 								<groupId>org.apache.flink</groupId>
 								<artifactId>flink-annotations</artifactId>
-								<version>${project.version}</version>
+								<version>${flink.version}</version>
 							</dependency>
 						</dependencies>
 					</configuration>
