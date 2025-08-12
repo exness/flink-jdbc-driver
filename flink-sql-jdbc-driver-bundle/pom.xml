@@ -130,7 +130,7 @@
                         <configuration>
                             <artifactSet>
                                 <includes combine.children="append">
-                                    <include>org.apache.flink:flink-sql-jdbc-driver</include>
+                                    <include>com.exness:flink-sql-jdbc-driver</include>
                                     <include>org.apache.flink:flink-sql-client</include>
                                     <include>org.apache.flink:flink-sql-gateway-api</include>
                                     <include>org.apache.flink:flink-sql-gateway</include>
