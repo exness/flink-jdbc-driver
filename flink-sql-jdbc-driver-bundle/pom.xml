@@ -58,7 +58,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.flink</groupId>
+            <groupId>${parent.groupId}</groupId>
             <artifactId>flink-sql-jdbc-driver</artifactId>
             <version>${parent.version}</version>
             <optional>${flink.markBundledAsOptional}</optional>
