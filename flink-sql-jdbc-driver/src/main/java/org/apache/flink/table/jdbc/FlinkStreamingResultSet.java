@@ -86,9 +86,9 @@ public class FlinkStreamingResultSet extends FlinkResultSet {
             case DATE:
             case INTERVAL_YEAR_MONTH:
             case TIME_WITHOUT_TIME_ZONE:
-            case TIMESTAMP_WITHOUT_TIME_ZONE:
                 return 0;
             case BIGINT:
+            case INTERVAL_DAY_TIME:
                 return 0L;
             case FLOAT:
                 return 0.0f;
@@ -105,6 +105,7 @@ public class FlinkStreamingResultSet extends FlinkResultSet {
                 return StringData.fromString("");
             case ARRAY:
                 return new GenericArrayData(new Object[0]);
+            case TIMESTAMP_WITHOUT_TIME_ZONE:
             case TIMESTAMP_WITH_TIME_ZONE:
             case TIMESTAMP_WITH_LOCAL_TIME_ZONE:
                 return TimestampData.fromEpochMillis(0);
