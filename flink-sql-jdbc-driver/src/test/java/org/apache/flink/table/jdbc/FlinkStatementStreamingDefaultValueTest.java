@@ -101,7 +101,7 @@ public class FlinkStatementStreamingDefaultValueTest extends FlinkJdbcDriverTest
                             resultSet.getTimestamp("tmstp"));
                     assertEquals(0L, resultSet.getLong("bgint"));
                     assertEquals(0, resultSet.getFloat("flt"));
-                    assertEquals(0, resultSet.getInt("tmstpwotz"));
+                    assertEquals( TimestampData.fromEpochMillis(0).toTimestamp(), resultSet.getTimestamp("tmstpwotz"));
                     assertEquals(Collections.emptyMap(), resultSet.getObject("map"));
                     assertEquals(
                             "{\"int1\":0,\"int2\":null,\"str1\":\"\",\"nested_row_not_null\":{\"str2\":null,\"int4\":0},\"nested_row_null\":null}",

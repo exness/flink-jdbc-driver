@@ -120,7 +120,7 @@ class AuthAwareJdbcExecutor extends JdbcExecutor {
                 throw new SqlExecutionException(AUTH_TOKEN_ERROR_MSG);
             } catch (IOException e) {
                 if (i == ACCESS_TOKEN_MAX_RETRY_ATTEMPTS) {
-                    throw new SqlExecutionException("Cannot set auth header: " + e.getCause());
+                    throw new SqlExecutionException("Cannot set auth header: " + e.getMessage());
                 }
                 try {
                     Thread.sleep(delay);
