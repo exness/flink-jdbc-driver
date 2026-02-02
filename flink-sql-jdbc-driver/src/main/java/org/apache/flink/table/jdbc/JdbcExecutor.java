@@ -96,7 +96,7 @@ import static org.apache.flink.util.ExceptionUtils.firstOrSuppressed;
  * Copy-pasted from org.apache.flink.table.client.gateway.ExecutorImpl, added the ability to connect
  * to a https gateway endpoint.
  */
-public class JdbcExecutor implements Executor {
+class JdbcExecutor implements Executor {
 
     private static final Logger LOG = LoggerFactory.getLogger(JdbcExecutor.class);
     private static final long HEARTBEAT_INTERVAL_MILLISECONDS = 60_000L;
