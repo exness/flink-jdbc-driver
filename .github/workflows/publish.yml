@@ -24,7 +24,7 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Set version
-        run: mvn versions:set -DnewVersion=${{ github.ref_name }}
+        run: mvn versions:set -DnewVersion=${{ github.ref_name }} -DgenerateBackupPoms=false
 
       - name: Publish to Maven Central
         run: mvn -B -P release -pl :flink-sql-jdbc-driver-bundle -am deploy

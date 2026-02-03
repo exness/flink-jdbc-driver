@@ -26,7 +26,7 @@
     <parent>
         <artifactId>flink-exness-jdbc-driver</artifactId>
         <groupId>com.exness</groupId>
-        <version>1.20.1</version>
+        <version>2.2.0</version>
     </parent>
 
     <artifactId>flink-sql-jdbc-driver</artifactId>
@@ -116,8 +116,6 @@
     </dependencies>
 
     <build>
-        <plugins>
-        </plugins>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>

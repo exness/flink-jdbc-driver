@@ -38,15 +38,15 @@ import static org.apache.flink.table.jdbc.utils.DriverUtils.isNullOrWhitespaceOn
  * Driver info for flink driver, it reads driver name and version from driver.properties which will
  * be updated by flink version.
  */
-final class DriverInfo {
+public final class DriverInfo {
     private static final Logger LOG = LoggerFactory.getLogger(DriverInfo.class);
 
     private static final String DRIVER_NAME_OPTION = "flink.driver.name";
     private static final String DRIVER_VERSION_OPTION = "flink.driver.version";
-    static final String DRIVER_NAME;
-    static final String DRIVER_VERSION;
-    static final int DRIVER_VERSION_MAJOR;
-    static final int DRIVER_VERSION_MINOR;
+    public static final String DRIVER_NAME;
+    public static final String DRIVER_VERSION;
+    public static final int DRIVER_VERSION_MAJOR;
+    public static final int DRIVER_VERSION_MINOR;
 
     static {
         try {

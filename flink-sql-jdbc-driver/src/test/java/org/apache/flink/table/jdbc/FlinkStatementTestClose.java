@@ -30,6 +30,9 @@ import org.apache.flink.util.CloseableIterator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import javax.annotation.Nullable;
+
+import java.net.URI;
 import java.nio.file.Path;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -123,6 +126,11 @@ public class FlinkStatementTestClose extends FlinkJdbcDriverTestBase {
 
         @Override
         public List<String> completeStatement(String statement, int position) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String deployScript(@Nullable String script, @Nullable URI uri) {
             throw new UnsupportedOperationException();
         }
 

@@ -10,6 +10,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import static org.apache.flink.table.jdbc.DriverInfo.DRIVER_NAME;
+import static org.apache.flink.table.jdbc.DriverInfo.DRIVER_VERSION;
+
 public class AuthUtils {
     private AuthUtils() {}
 
@@ -18,6 +21,7 @@ public class AuthUtils {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Authorization", "Bearer " + refreshToken);
+        conn.setRequestProperty("User-Agent", DRIVER_NAME + "/" + DRIVER_VERSION);
         conn.setConnectTimeout(5000);
         conn.setReadTimeout(5000);
 
