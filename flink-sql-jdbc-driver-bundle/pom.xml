@@ -97,7 +97,7 @@
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-core</artifactId>
-            <version>${.version}</version>
+            <version>${flink.version}</version>
             <optional>${flink.markBundledAsOptional}</optional>
         </dependency>
         <dependency>
