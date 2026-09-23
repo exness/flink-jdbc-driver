@@ -81,7 +81,7 @@ under the License.
 		<flink.hadoop.version>2.10.2</flink.hadoop.version>
 		<flink.XmxMax>3072m</flink.XmxMax>
 		<!-- XmxMax / forkCountITCase -->
-		<flink.XmxITCaseflink>1536m</flink.XmxITCaseflink>
+		<flink.XmxITCase>1536m</flink.XmxITCase>
 		<!-- XmxMax / forkCountUnitTest -->
 		<flink.XmxUnitTest>768m</flink.XmxUnitTest>
 		<!-- Need to use a user property here because the surefire
